@@ -23,9 +23,7 @@ VERSION = "2.0 PRO"
 CORRECT_PASSWORD = "Avenue-1"
 MAX_ATTEMPTS = 3
 
-# === SESSION STORAGE (In-memory for serverless) ===
-# Note: This resets on each serverless function invocation
-# For production, use a database like Vercel KV or Supabase
+# === SESSION STORAGE ===
 session_data = {
     "attempts": 0,
     "locked": False,
@@ -34,7 +32,6 @@ session_data = {
 
 # === CACHE SYSTEM ===
 def cache_path(rc):
-    # Use /tmp for Vercel serverless (writable)
     cache_dir = "/tmp/cache"
     os.makedirs(cache_dir, exist_ok=True)
     return f"{cache_dir}/{hashlib.md5(rc.encode()).hexdigest()}.json"
@@ -44,7 +41,7 @@ def save_cache(rc, data):
         with open(cache_path(rc), "w") as f:
             json.dump(data, f, indent=4)
     except:
-        pass  # Silent fail for serverless
+        pass
 
 def load_cache(rc):
     try:
@@ -132,8 +129,8 @@ async def index():
             z-index: 0;
             background: #0a0a0f;
             background-image: 
-                radial-gradient(ellipse at 20% 50%, rgba(0, 255, 0, 0.03) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 50%, rgba(0, 255, 255, 0.02) 0%, transparent 60%);
+                radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(99, 102, 241, 0.03) 0%, transparent 60%);
         }
         .cyber-grid {
             position: absolute;
@@ -142,8 +139,8 @@ async def index():
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
             animation: gridMove 20s linear infinite;
         }
@@ -155,12 +152,13 @@ async def index():
             background: rgba(10, 10, 15, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 255, 0, 0.08);
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.05);
             transition: all 0.3s ease;
         }
         .glass-premium:hover {
-            border-color: rgba(0, 255, 0, 0.15);
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 50px rgba(59, 130, 246, 0.1);
         }
         .disclaimer-box {
             background: rgba(255, 0, 0, 0.05);
@@ -183,7 +181,7 @@ async def index():
         }
         .input-cyber {
             background: rgba(0, 0, 0, 0.6);
-            border: 1.5px solid rgba(0, 255, 0, 0.1);
+            border: 1.5px solid rgba(59, 130, 246, 0.2);
             transition: all 0.3s ease;
             color: #e2e8f0;
             font-family: 'Orbitron', monospace;
@@ -194,8 +192,8 @@ async def index():
             border-radius: 12px;
         }
         .input-cyber:focus {
-            border-color: #00ff00;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 30px rgba(0, 255, 0, 0.03);
+            border-color: #3b82f6;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.15), inset 0 0 30px rgba(59, 130, 246, 0.05);
             outline: none;
         }
         .input-cyber::placeholder {
@@ -212,23 +210,23 @@ async def index():
             box-shadow: 0 0 30px rgba(34, 197, 94, 0.15);
         }
         .btn-cyber {
-            background: linear-gradient(135deg, #00aa00, #00ff00);
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
             border: none;
             border-radius: 12px;
             padding: 1rem 2rem;
             font-weight: 700;
-            color: #000000;
+            color: #ffffff;
             font-family: 'Orbitron', monospace;
             font-size: 0.95rem;
             letter-spacing: 0.05em;
-            box-shadow: 0 4px 30px rgba(0, 255, 0, 0.2);
+            box-shadow: 0 4px 30px rgba(59, 130, 246, 0.25);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             width: 100%;
         }
         .btn-cyber:hover {
             transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 8px 50px rgba(0, 255, 0, 0.4);
+            box-shadow: 0 8px 50px rgba(59, 130, 246, 0.4);
         }
         .btn-cyber:active {
             transform: scale(0.98);
@@ -239,12 +237,12 @@ async def index():
             transform: none;
         }
         .btn-danger {
-            background: linear-gradient(135deg, #cc0000, #ff0000);
-            box-shadow: 0 4px 30px rgba(255, 0, 0, 0.2);
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            box-shadow: 0 4px 30px rgba(239, 68, 68, 0.2);
             color: white;
         }
         .btn-danger:hover {
-            box-shadow: 0 8px 50px rgba(255, 0, 0, 0.4);
+            box-shadow: 0 8px 50px rgba(239, 68, 68, 0.4);
         }
         .btn-purple {
             background: linear-gradient(135deg, #7c3aed, #8b5cf6);
@@ -265,7 +263,7 @@ async def index():
             text-transform: uppercase;
             letter-spacing: 0.05em;
             background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.15);
             font-family: 'Orbitron', monospace;
         }
         .dot-cyber {
@@ -276,9 +274,9 @@ async def index():
         }
         .dot-cyber.idle { background: #22c55e; box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
         .dot-cyber.active {
-            background: #00ff00;
+            background: #3b82f6;
             animation: pulse-dot 0.8s ease-in-out infinite;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
         }
         .dot-cyber.error {
             background: #ef4444;
@@ -345,7 +343,7 @@ async def index():
             padding: 10px 12px;
         }
         .result-table .field {
-            color: #00ff00;
+            color: #60a5fa;
             font-weight: 600;
             font-family: 'Orbitron', monospace;
             font-size: 0.7rem;
@@ -359,7 +357,7 @@ async def index():
         }
         .logs-premium {
             scrollbar-width: thin;
-            scrollbar-color: rgba(0, 255, 0, 0.1) transparent;
+            scrollbar-color: rgba(59, 130, 246, 0.1) transparent;
             max-height: 150px;
             overflow-y: auto;
             font-size: 0.7rem;
@@ -368,7 +366,7 @@ async def index():
         .logs-premium::-webkit-scrollbar { width: 4px; }
         .logs-premium::-webkit-scrollbar-track { background: transparent; }
         .logs-premium::-webkit-scrollbar-thumb {
-            background: rgba(0, 255, 0, 0.15);
+            background: rgba(59, 130, 246, 0.15);
             border-radius: 10px;
         }
         .log-entry {
@@ -378,8 +376,8 @@ async def index():
             transition: all 0.15s;
         }
         .log-entry:hover {
-            background: rgba(0, 255, 0, 0.03);
-            border-left-color: #00ff00;
+            background: rgba(59, 130, 246, 0.03);
+            border-left-color: #3b82f6;
             color: #94a3b8;
         }
         .log-entry.success { color: #22c55e; }
@@ -389,7 +387,7 @@ async def index():
         .log-entry.locked { color: #dc2626; font-weight: 700; }
         .divider-cyber {
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.15), transparent);
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15), transparent);
         }
         .booting {
             color: #60a5fa;
@@ -420,22 +418,22 @@ async def index():
     <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         
         <header class="text-center mb-8">
-            <div class="inline-block px-6 py-2 rounded-full border border-green-500/20 bg-black/30 mb-4">
-                <span class="text-[10px] text-green-500 font-['Orbitron'] tracking-[0.15em]">🔐 SECURE • VEHICLE ACCESS</span>
+            <div class="inline-block px-6 py-2 rounded-full border border-blue-500/20 bg-black/30 mb-4">
+                <span class="text-[10px] text-blue-400 font-['Orbitron'] tracking-[0.15em]">🔐 SECURE • VEHICLE ACCESS</span>
             </div>
             <h1 class="text-4xl lg:text-6xl font-black font-['Orbitron'] tracking-tight">
-                <span class="text-green-400">VEHICLE</span>
+                <span class="text-blue-400">VEHICLE</span>
                 <span class="text-white">LOOKUP</span>
             </h1>
             <p class="text-sm text-gray-500 font-['Orbitron'] tracking-[0.2em] mt-2">
-                [ <span class="text-green-400">SAMARTH HACKER</span> ]
+                [ <span class="text-blue-400">SAMARTH HACKER</span> ]
             </p>
             <div class="divider-cyber w-full max-w-md mx-auto mt-4"></div>
         </header>
 
         <div class="disclaimer-box mb-6">
             <div class="title">⚠️ Disclaimer</div>
-            <div class="text">This tool is only for educational purposes.<br>Made by: <strong class="text-green-400">Samarth</strong></div>
+            <div class="text">This tool is only for educational purposes.<br>Made by: <strong class="text-blue-400">Samarth</strong></div>
         </div>
 
         <div class="glass-premium rounded-2xl p-6 lg:p-8">
@@ -444,7 +442,7 @@ async def index():
                 <span class="text-2xl">🚗</span>
                 <div>
                     <div class="text-xs text-gray-500 font-['Orbitron'] tracking-[0.1em]">VEHICLE INTELLIGENCE</div>
-                    <div class="text-xs text-gray-400">Designed Website: <strong class="text-green-400">Samarth</strong> • Website Owner: <strong class="text-green-400">Samarth</strong></div>
+                    <div class="text-xs text-gray-400">Designed Website: <strong class="text-blue-400">Samarth</strong> • Website Owner: <strong class="text-blue-400">Samarth</strong></div>
                 </div>
             </div>
 
@@ -467,7 +465,7 @@ async def index():
                 </button>
             </div>
 
-            <div id="accessStatus" class="mt-4 p-3 bg-black/30 rounded-xl border border-white/5 text-center hidden">
+            <div id="accessStatus" class="mt-4 p-3 bg-black/30 rounded-xl border border-blue-500/10 text-center hidden">
                 <div id="accessMessage" class="text-sm font-['Orbitron']"></div>
             </div>
 
@@ -475,7 +473,7 @@ async def index():
             <div id="mainSystem" class="hidden mt-6">
                 <div class="divider-cyber w-full mb-4"></div>
 
-                <div class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/5 mb-4">
+                <div class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-blue-500/10 mb-4">
                     <div class="badge-cyber">
                         <span class="dot-cyber idle" id="statusDot"></span>
                         <span id="statusText" class="text-gray-400">SYSTEM READY</span>
@@ -508,21 +506,21 @@ async def index():
                     <div class="divider-cyber w-full mb-4"></div>
                     
                     <div class="text-center mb-4">
-                        <span class="text-xs text-green-400 font-['Orbitron'] tracking-[0.1em]">⚡ VEHICLE LOOKUP SYSTEM</span>
+                        <span class="text-xs text-blue-400 font-['Orbitron'] tracking-[0.1em]">⚡ VEHICLE LOOKUP SYSTEM</span>
                         <div class="text-[10px] text-gray-500 mt-1">[ SAMARTH HACKER ]</div>
                     </div>
 
-                    <div id="apiStatus" class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/5 mb-4">
+                    <div id="apiStatus" class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-blue-500/10 mb-4">
                         <div>
-                            <span class="text-xs text-green-400 font-['Orbitron']">API: <span id="apiStatusText">OK</span></span>
+                            <span class="text-xs text-blue-400 font-['Orbitron']">API: <span id="apiStatusText">OK</span></span>
                             <span class="text-xs text-gray-500 ml-4">Cached: <span id="cacheStatus">NO</span></span>
                         </div>
                         <div>
-                            <span class="text-xs text-gray-500">Response: <span id="responseTime" class="text-green-400">--</span> ms</span>
+                            <span class="text-xs text-gray-500">Response: <span id="responseTime" class="text-blue-400">--</span> ms</span>
                         </div>
                     </div>
 
-                    <div id="resultsTable" class="bg-black/30 rounded-xl border border-white/5 overflow-hidden">
+                    <div id="resultsTable" class="bg-black/30 rounded-xl border border-blue-500/10 overflow-hidden">
                         <table class="result-table">
                             <tbody id="resultsBody">
                                 <tr><td colspan="2" class="text-center text-gray-500 py-8">No data loaded</td></tr>
@@ -534,7 +532,7 @@ async def index():
                         <button onclick="exportResult()" id="exportBtn" class="btn-cyber text-xs py-2.5 btn-purple">
                             📥 EXPORT JSON
                         </button>
-                        <button onclick="copyResult()" id="copyBtn" class="btn-cyber text-xs py-2.5" style="background: linear-gradient(135deg, #7c3aed, #8b5cf6); box-shadow: 0 4px 30px rgba(124, 58, 237, 0.2);">
+                        <button onclick="copyResult()" id="copyBtn" class="btn-cyber text-xs py-2.5" style="background: linear-gradient(135deg, #1e40af, #3b82f6); box-shadow: 0 4px 30px rgba(59, 130, 246, 0.2);">
                             📋 COPY
                         </button>
                     </div>
@@ -544,7 +542,7 @@ async def index():
                             <span class="text-[10px] text-gray-500 font-['Orbitron'] tracking-[0.1em]">📜 ACTIVITY LOG</span>
                             <span class="text-[10px] text-gray-500">LIVE</span>
                         </div>
-                        <div id="logsContainer" class="logs-premium bg-black/30 rounded-xl p-3 border border-white/5">
+                        <div id="logsContainer" class="logs-premium bg-black/30 rounded-xl p-3 border border-blue-500/10">
                             <div class="log-entry info">🟢 System initialized</div>
                             <div class="log-entry info">⏳ Waiting for RC input...</div>
                         </div>

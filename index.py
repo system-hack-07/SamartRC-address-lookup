@@ -17,8 +17,13 @@ class VehicleRequest(BaseModel):
 class PasswordRequest(BaseModel):
     password: str
 
+class PhoneRequest(BaseModel):
+    phone: str
+
 # === VEHICLE API ===
 API_BASE = "https://vehicleinfobyterabaap.vercel.app/lookup"
+PHONE_API_BASE = "http://vehical2num.vercel.app/"
+PHONE_API_KEY = "tocix"
 VERSION = "2.0 PRO"
 CORRECT_PASSWORD = "Avenue-1"
 MAX_ATTEMPTS = 3
@@ -375,6 +380,14 @@ async def index():
         .btn-purple:hover {
             box-shadow: 0 8px 50px rgba(124, 58, 237, 0.4);
         }
+        .btn-phone {
+            background: linear-gradient(135deg, #059669, #10b981);
+            box-shadow: 0 4px 30px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+        .btn-phone:hover {
+            box-shadow: 0 8px 50px rgba(16, 185, 129, 0.5);
+        }
         .badge-cyber {
             display: inline-flex;
             align-items: center;
@@ -410,6 +423,11 @@ async def index():
             background: #dc2626;
             animation: pulse-dot 0.3s ease-in-out infinite;
             box-shadow: 0 0 40px rgba(220, 38, 38, 0.6);
+        }
+        .dot-cyber.success {
+            background: #22c55e;
+            animation: pulse-dot 0.6s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
         }
         @keyframes pulse-dot {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -521,6 +539,16 @@ async def index():
             .boot-text { font-size: 0.9rem; }
             .boot-progress { width: 200px; }
         }
+        /* Phone Icon */
+        .phone-icon {
+            display: inline-block;
+            animation: phoneRing 2s ease-in-out infinite;
+        }
+        @keyframes phoneRing {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-15deg); }
+            20%, 40% { transform: rotate(15deg); }
+        }
     </style>
 </head>
 <body>
@@ -539,11 +567,11 @@ async def index():
 
     <!-- AUDIO -->
     <audio id="clickSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRlYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
+        <source src="data:audio/wav;base64,UklGRlYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
         </source>
     </audio>
     <audio id="errorSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
         </source>
     </audio>
     <audio id="successSound" preload="auto">
@@ -551,7 +579,7 @@ async def index():
         </source>
     </audio>
     <audio id="bootSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRlYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
+        <source src="data:audio/wav;base64,UklGRlYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
         </source>
     </audio>
 
@@ -627,71 +655,137 @@ async def index():
                     <div class="text-[10px] text-gray-500 font-['Orbitron']" id="timestamp"></div>
                 </div>
 
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-xs text-gray-500 font-['Orbitron'] tracking-[0.1em] block mb-2">VEHICLE RC LOOKUP</label>
-                        <div class="relative">
-                            <input id="rcInput" 
-                                   class="input-cyber"
-                                   placeholder="ENTER RC NUMBER"
-                                   onkeydown="if(event.key==='Enter') lookupVehicle()">
+                <!-- Tabs -->
+                <div class="flex gap-1 mb-4 border-b border-white/5 overflow-x-auto">
+                    <button class="tab-btn active" data-tab="vehicle" onclick="switchTab('vehicle'); playClickSound();">
+                        <span class="text-blue-400 font-bold">🚗</span> VEHICLE RC
+                    </button>
+                    <button class="tab-btn" data-tab="phone" onclick="switchTab('phone'); playClickSound();">
+                        <span class="text-green-400 font-bold phone-icon">📱</span> PHONE LOOKUP
+                    </button>
+                </div>
+
+                <!-- Tab 1: Vehicle RC Lookup -->
+                <div id="tab-vehicle" class="tab-content active">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs text-gray-500 font-['Orbitron'] tracking-[0.1em] block mb-2">VEHICLE RC LOOKUP</label>
+                            <div class="relative">
+                                <input id="rcInput" 
+                                       class="input-cyber"
+                                       placeholder="ENTER RC NUMBER"
+                                       onkeydown="if(event.key==='Enter') lookupVehicle()">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="lookupVehicle()" id="scanBtn" class="btn-cyber">
+                                🔍 SCAN
+                            </button>
+                            <button onclick="clearResults()" id="clearBtn" class="btn-cyber btn-danger">
+                                ✕ CLEAR
+                            </button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="lookupVehicle()" id="scanBtn" class="btn-cyber">
-                            🔍 SCAN
-                        </button>
-                        <button onclick="clearResults()" id="clearBtn" class="btn-cyber btn-danger">
-                            ✕ CLEAR
-                        </button>
+                    <div id="resultsSection" class="mt-6 hidden">
+                        <div class="divider-cyber w-full mb-4"></div>
+                        
+                        <div class="text-center mb-4">
+                            <span class="text-xs text-blue-400 font-['Orbitron'] tracking-[0.1em]">⚡ VEHICLE LOOKUP SYSTEM</span>
+                            <div class="text-[10px] text-gray-500 mt-1">[ SAMARTH HACKER ]</div>
+                        </div>
+
+                        <div id="apiStatus" class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-blue-500/10 mb-4">
+                            <div>
+                                <span class="text-xs text-blue-400 font-['Orbitron']">API: <span id="apiStatusText">OK</span></span>
+                                <span class="text-xs text-gray-500 ml-4">Cached: <span id="cacheStatus">NO</span></span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gray-500">Response: <span id="responseTime" class="text-blue-400">--</span> ms</span>
+                            </div>
+                        </div>
+
+                        <div id="resultsTable" class="bg-black/30 rounded-xl border border-blue-500/10 overflow-hidden">
+                            <table class="result-table">
+                                <tbody id="resultsBody">
+                                    <tr><td colspan="2" class="text-center text-gray-500 py-8">No data loaded</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mt-4">
+                            <button onclick="exportResult()" id="exportBtn" class="btn-cyber text-xs py-2.5 btn-purple">
+                                📥 EXPORT JSON
+                            </button>
+                            <button onclick="copyResult()" id="copyBtn" class="btn-cyber text-xs py-2.5" style="background: linear-gradient(135deg, #1e40af, #3b82f6); box-shadow: 0 4px 30px rgba(59, 130, 246, 0.2);">
+                                📋 COPY
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div id="resultsSection" class="mt-6 hidden">
+                <!-- Tab 2: Phone Lookup -->
+                <div id="tab-phone" class="tab-content">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs text-gray-500 font-['Orbitron'] tracking-[0.1em] block mb-2">📱 PHONE NUMBER LOOKUP</label>
+                            <div class="relative">
+                                <input id="phoneInput" 
+                                       class="input-cyber"
+                                       placeholder="ENTER PHONE NUMBER"
+                                       onkeydown="if(event.key==='Enter') lookupPhone()">
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-1">Enter phone number to find vehicle details</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="lookupPhone()" id="phoneScanBtn" class="btn-cyber btn-phone">
+                                📱 SEARCH
+                            </button>
+                            <button onclick="clearPhoneResults()" id="phoneClearBtn" class="btn-cyber btn-danger">
+                                ✕ CLEAR
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="phoneResultsSection" class="mt-6 hidden">
+                        <div class="divider-cyber w-full mb-4"></div>
+                        
+                        <div class="text-center mb-4">
+                            <span class="text-xs text-green-400 font-['Orbitron'] tracking-[0.1em]">📱 PHONE TO VEHICLE LOOKUP</span>
+                            <div class="text-[10px] text-gray-500 mt-1">[ SAMARTH HACKER ]</div>
+                        </div>
+
+                        <div id="phoneApiStatus" class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-green-500/10 mb-4">
+                            <div>
+                                <span class="text-xs text-green-400 font-['Orbitron']">Status: <span id="phoneApiStatusText">OK</span></span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-gray-500">Response: <span id="phoneResponseTime" class="text-green-400">--</span> ms</span>
+                            </div>
+                        </div>
+
+                        <div id="phoneResultsTable" class="bg-black/30 rounded-xl border border-green-500/10 overflow-hidden">
+                            <table class="result-table">
+                                <tbody id="phoneResultsBody">
+                                    <tr><td colspan="2" class="text-center text-gray-500 py-8">No data loaded</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs -->
+                <div class="mt-6">
                     <div class="divider-cyber w-full mb-4"></div>
-                    
-                    <div class="text-center mb-4">
-                        <span class="text-xs text-blue-400 font-['Orbitron'] tracking-[0.1em]">⚡ VEHICLE LOOKUP SYSTEM</span>
-                        <div class="text-[10px] text-gray-500 mt-1">[ SAMARTH HACKER ]</div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] text-gray-500 font-['Orbitron'] tracking-[0.1em]">📜 ACTIVITY LOG</span>
+                        <span class="text-[10px] text-gray-500">LIVE</span>
                     </div>
-
-                    <div id="apiStatus" class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-blue-500/10 mb-4">
-                        <div>
-                            <span class="text-xs text-blue-400 font-['Orbitron']">API: <span id="apiStatusText">OK</span></span>
-                            <span class="text-xs text-gray-500 ml-4">Cached: <span id="cacheStatus">NO</span></span>
-                        </div>
-                        <div>
-                            <span class="text-xs text-gray-500">Response: <span id="responseTime" class="text-blue-400">--</span> ms</span>
-                        </div>
-                    </div>
-
-                    <div id="resultsTable" class="bg-black/30 rounded-xl border border-blue-500/10 overflow-hidden">
-                        <table class="result-table">
-                            <tbody id="resultsBody">
-                                <tr><td colspan="2" class="text-center text-gray-500 py-8">No data loaded</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 mt-4">
-                        <button onclick="exportResult()" id="exportBtn" class="btn-cyber text-xs py-2.5 btn-purple">
-                            📥 EXPORT JSON
-                        </button>
-                        <button onclick="copyResult()" id="copyBtn" class="btn-cyber text-xs py-2.5" style="background: linear-gradient(135deg, #1e40af, #3b82f6); box-shadow: 0 4px 30px rgba(59, 130, 246, 0.2);">
-                            📋 COPY
-                        </button>
-                    </div>
-
-                    <div class="mt-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[10px] text-gray-500 font-['Orbitron'] tracking-[0.1em]">📜 ACTIVITY LOG</span>
-                            <span class="text-[10px] text-gray-500">LIVE</span>
-                        </div>
-                        <div id="logsContainer" class="logs-premium bg-black/30 rounded-xl p-3 border border-blue-500/10">
-                            <div class="log-entry info">🟢 System initialized</div>
-                            <div class="log-entry info">⏳ Waiting for RC input...</div>
-                        </div>
+                    <div id="logsContainer" class="logs-premium bg-black/30 rounded-xl p-3 border border-blue-500/10">
+                        <div class="log-entry info">🟢 System initialized</div>
+                        <div class="log-entry info">⏳ Waiting for input...</div>
                     </div>
                 </div>
             </div>
@@ -711,6 +805,8 @@ async def index():
     <script>
         let currentData = null;
         let currentRc = null;
+        let currentPhoneData = null;
+        let currentPhone = null;
         let attempts = 0;
         const maxAttempts = 3;
         const correctPassword = "Avenue-1";
@@ -766,6 +862,14 @@ async def index():
                     resolve();
                 }, 4000);
             });
+        }
+
+        // === TAB SWITCHING ===
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
         }
 
         // === VERIFY PASSWORD ===
@@ -887,10 +991,8 @@ async def index():
                 if (data.status === 'success') {
                     // Remove copyright fields from data
                     if (data.data && typeof data.data === 'object') {
-                        // Filter out copyright fields
                         const filteredData = {};
                         for (const [key, value] of Object.entries(data.data)) {
-                            // Skip any field containing "copyright", "COPYRIGHT", "source maker", "rajan", etc.
                             const keyLower = key.toLowerCase();
                             if (keyLower.includes('copyright') || 
                                 keyLower.includes('source') || 
@@ -900,7 +1002,6 @@ async def index():
                                 keyLower.includes('@')) {
                                 continue;
                             }
-                            // Skip value if it contains copyright text
                             if (typeof value === 'string' && 
                                 (value.toLowerCase().includes('copyright') || 
                                  value.toLowerCase().includes('rajan') ||
@@ -920,8 +1021,7 @@ async def index():
                     triggerSprinkles();
                     document.getElementById('statusText').textContent = 'SUCCESS';
                     document.getElementById('statusText').style.color = '#22c55e';
-                    document.getElementById('statusDot').className = 'dot-cyber active';
-                    document.getElementById('statusDot').style.background = '#22c55e';
+                    document.getElementById('statusDot').className = 'dot-cyber success';
                 } else {
                     addLog(`❌ Error: ${data.message}`, 'error');
                     playErrorSound();
@@ -949,26 +1049,19 @@ async def index():
             const tbody = document.getElementById('resultsBody');
             tbody.innerHTML = '';
             
-            // Fields to exclude (including copyright)
             const excludeFields = ['_api_time', 'cached', 'timestamp', 'copyright', 'COPYRIGHT', 'source_maker', 'credit'];
             
             let hasData = false;
             for (const [key, value] of Object.entries(data)) {
-                // Skip excluded fields
                 if (excludeFields.includes(key.toLowerCase())) continue;
                 if (key.startsWith('_')) continue;
-                
-                // Skip if value is null/undefined/empty
                 if (value === null || value === undefined || value === '') continue;
-                
-                // Skip if value contains copyright text
                 if (typeof value === 'string' && 
                     (value.toLowerCase().includes('copyright') || 
                      value.toLowerCase().includes('rajan') ||
                      value.toLowerCase().includes('source maker'))) {
                     continue;
                 }
-                
                 hasData = true;
                 const tr = document.createElement('tr');
                 const displayKey = key.replace(/_/g, ' ').toUpperCase();
@@ -984,6 +1077,83 @@ async def index():
             }
         }
 
+        // === LOOKUP PHONE ===
+        async function lookupPhone() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            if (!phone) {
+                addLog('❌ Please enter a phone number', 'error');
+                playErrorSound();
+                return;
+            }
+
+            document.getElementById('statusText').textContent = 'SEARCHING PHONE...';
+            document.getElementById('statusText').style.color = '#60a5fa';
+            document.getElementById('statusDot').className = 'dot-cyber active';
+            playClickSound();
+            addLog(`📱 Searching for phone: ${phone}`, 'info');
+
+            try {
+                const response = await fetch('/phone-lookup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: phone })
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    currentPhoneData = data.data;
+                    currentPhone = phone;
+                    displayPhoneResults(phone, data.data, data.response_time);
+                    addLog(`✅ Vehicle found for phone: ${phone}`, 'success');
+                    playSuccessSound();
+                    triggerSprinkles();
+                    document.getElementById('statusText').textContent = 'SUCCESS';
+                    document.getElementById('statusText').style.color = '#22c55e';
+                    document.getElementById('statusDot').className = 'dot-cyber success';
+                } else {
+                    addLog(`❌ Error: ${data.message}`, 'error');
+                    playErrorSound();
+                    document.getElementById('statusText').textContent = 'ERROR';
+                    document.getElementById('statusText').style.color = '#ef4444';
+                    document.getElementById('statusDot').className = 'dot-cyber error';
+                }
+            } catch (error) {
+                addLog(`❌ Request failed: ${error.message}`, 'error');
+                playErrorSound();
+                document.getElementById('statusText').textContent = 'ERROR';
+                document.getElementById('statusText').style.color = '#ef4444';
+                document.getElementById('statusDot').className = 'dot-cyber error';
+            }
+        }
+
+        // === DISPLAY PHONE RESULTS ===
+        function displayPhoneResults(phone, data, responseTime) {
+            document.getElementById('phoneResultsSection').classList.remove('hidden');
+            document.getElementById('phoneApiStatusText').textContent = 'OK';
+            document.getElementById('phoneApiStatusText').style.color = '#22c55e';
+            document.getElementById('phoneResponseTime').textContent = responseTime || '--';
+
+            const tbody = document.getElementById('phoneResultsBody');
+            tbody.innerHTML = '';
+
+            let hasData = false;
+            for (const [key, value] of Object.entries(data)) {
+                if (value === null || value === undefined || value === '') continue;
+                hasData = true;
+                const tr = document.createElement('tr');
+                const displayKey = key.replace(/_/g, ' ').toUpperCase();
+                tr.innerHTML = `
+                    <td class="field">${displayKey}</td>
+                    <td class="value">${typeof value === 'object' ? JSON.stringify(value) : value}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            if (!hasData) {
+                tbody.innerHTML = `<tr><td colspan="2" class="text-center text-gray-500 py-8">No vehicle found for this phone number</td></tr>`;
+            }
+        }
+
         // === CLEAR RESULTS ===
         function clearResults() {
             document.getElementById('resultsSection').classList.add('hidden');
@@ -991,14 +1161,22 @@ async def index():
             document.getElementById('statusText').textContent = 'SYSTEM READY';
             document.getElementById('statusText').style.color = '';
             document.getElementById('statusDot').className = 'dot-cyber idle';
-            document.getElementById('statusDot').style.background = '';
             currentData = null;
             currentRc = null;
-            document.getElementById('logsContainer').innerHTML = `
-                <div class="log-entry info">🟢 System initialized</div>
-                <div class="log-entry info">⏳ Waiting for RC input...</div>
-            `;
             addLog('🧹 Results cleared', 'info');
+            playClickSound();
+        }
+
+        // === CLEAR PHONE RESULTS ===
+        function clearPhoneResults() {
+            document.getElementById('phoneResultsSection').classList.add('hidden');
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('statusText').textContent = 'SYSTEM READY';
+            document.getElementById('statusText').style.color = '';
+            document.getElementById('statusDot').className = 'dot-cyber idle';
+            currentPhoneData = null;
+            currentPhone = null;
+            addLog('🧹 Phone results cleared', 'info');
             playClickSound();
         }
 
@@ -1010,7 +1188,6 @@ async def index():
                 return;
             }
             
-            // Remove copyright fields before export
             const cleanData = {};
             for (const [key, value] of Object.entries(currentData)) {
                 if (key.toLowerCase().includes('copyright') || 
@@ -1052,7 +1229,6 @@ async def index():
                 return;
             }
             
-            // Remove copyright fields before copy
             const cleanData = {};
             for (const [key, value] of Object.entries(currentData)) {
                 if (key.toLowerCase().includes('copyright') || 
@@ -1093,6 +1269,11 @@ async def index():
             document.getElementById('rcInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     lookupVehicle();
+                }
+            });
+            document.getElementById('phoneInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    lookupPhone();
                 }
             });
             addLog('🟢 Vehicle Lookup System ready', 'info');
@@ -1214,9 +1395,58 @@ async def lookup_vehicle(request: Request):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+@app.post("/phone-lookup")
+async def lookup_phone(request: Request):
+    try:
+        if not session_data["authenticated"]:
+            return {"status": "error", "message": "Access denied. Please authenticate first."}
+        
+        body = await request.json()
+        phone = body.get('phone', '').strip()
+        
+        if not phone:
+            return {"status": "error", "message": "Phone number is required"}
+        
+        # Build the phone lookup URL
+        phone_api_url = f"{PHONE_API_BASE}?key={PHONE_API_KEY}&vehicle={phone}"
+        
+        start_time = datetime.now()
+        try:
+            resp = requests.get(
+                phone_api_url,
+                timeout=15,
+                headers={"User-Agent": "VehicleLookup/PRO"}
+            )
+        except Exception as e:
+            return {"status": "error", "message": f"Request failed: {str(e)}"}
+        
+        response_time = (datetime.now() - start_time).total_seconds() * 1000
+        
+        if resp.status_code != 200:
+            return {
+                "status": "error",
+                "message": f"HTTP {resp.status_code}: {resp.text[:100]}"
+            }
+        
+        try:
+            data = resp.json()
+        except:
+            # Try to parse as text if not JSON
+            data = {"response": resp.text}
+        
+        return {
+            "status": "success",
+            "data": data,
+            "response_time": round(response_time, 2)
+        }
+        
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 if __name__ == "__main__":
     import uvicorn
     print("🚗 Samarth Hacker — Vehicle Lookup System")
     print("🔐 Password: Avenue-1")
+    print("📱 Phone API: " + PHONE_API_BASE)
     print("🌐 http://localhost:5000")
     uvicorn.run(app, host="0.0.0.0", port=5000)

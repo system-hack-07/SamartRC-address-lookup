@@ -149,8 +149,6 @@ async def index():
             0% { transform: translate(0, 0); }
             100% { transform: translate(40px, 40px); }
         }
-        
-        /* ===== GLOWING BLUE BORDER ===== */
         .glass-premium {
             background: rgba(10, 10, 15, 0.8);
             backdrop-filter: blur(20px);
@@ -181,8 +179,6 @@ async def index():
                 box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 60px rgba(59, 130, 246, 0.1), 0 0 100px rgba(59, 130, 246, 0.05);
             }
         }
-        
-        /* ===== SPRINKLES ===== */
         .sprinkle-container {
             position: fixed;
             top: 0;
@@ -204,8 +200,6 @@ async def index():
             0% { transform: translateY(-10px) rotate(0deg) scale(0.3); opacity: 1; }
             100% { transform: translateY(110vh) rotate(720deg) scale(1.5); opacity: 0; }
         }
-        
-        /* ===== FAKE BOOTING OVERLAY ===== */
         .boot-overlay {
             position: fixed;
             top: 0;
@@ -273,8 +267,6 @@ async def index():
             75% { content: '...'; }
             100% { content: ''; }
         }
-        
-        /* ===== DISCLAIMER ===== */
         .disclaimer-box {
             background: rgba(255, 0, 0, 0.05);
             border: 1px solid rgba(255, 0, 0, 0.15);
@@ -294,8 +286,6 @@ async def index():
             font-size: 0.75rem;
             margin-top: 4px;
         }
-        
-        /* ===== INPUT ===== */
         .input-cyber {
             background: rgba(0, 0, 0, 0.6);
             border: 1.5px solid rgba(59, 130, 246, 0.2);
@@ -326,8 +316,6 @@ async def index():
             border-color: #22c55e;
             box-shadow: 0 0 30px rgba(34, 197, 94, 0.15);
         }
-        
-        /* ===== BUTTONS ===== */
         .btn-cyber {
             background: linear-gradient(135deg, #1e40af, #3b82f6);
             border: none;
@@ -387,8 +375,6 @@ async def index():
         .btn-purple:hover {
             box-shadow: 0 8px 50px rgba(124, 58, 237, 0.4);
         }
-        
-        /* ===== BADGE ===== */
         .badge-cyber {
             display: inline-flex;
             align-items: center;
@@ -429,8 +415,6 @@ async def index():
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.7); }
         }
-        
-        /* ===== ACCESS STATUS ===== */
         .access-denied {
             color: #ef4444;
             font-family: 'Orbitron', monospace;
@@ -467,8 +451,6 @@ async def index():
             0%, 100% { opacity: 1; transform: scale(1) rotate(-2deg); }
             50% { opacity: 0.6; transform: scale(1.05) rotate(2deg); }
         }
-        
-        /* ===== RESULTS ===== */
         .result-table {
             width: 100%;
             border-collapse: collapse;
@@ -496,8 +478,6 @@ async def index():
             font-weight: 400;
             word-break: break-word;
         }
-        
-        /* ===== LOGS ===== */
         .logs-premium {
             scrollbar-width: thin;
             scrollbar-color: rgba(59, 130, 246, 0.1) transparent;
@@ -528,14 +508,10 @@ async def index():
         .log-entry.info { color: #60a5fa; }
         .log-entry.warning { color: #fbbf24; }
         .log-entry.locked { color: #dc2626; font-weight: 700; }
-        
-        /* ===== DIVIDER ===== */
         .divider-cyber {
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15), transparent);
         }
-        
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .input-cyber { font-size: 0.95rem; padding: 0.8rem 1rem; }
             .result-table td { padding: 6px 8px; font-size: 0.75rem; }
@@ -549,7 +525,7 @@ async def index():
 </head>
 <body>
 
-    <!-- ===== FAKE BOOTING OVERLAY ===== -->
+    <!-- BOOT OVERLAY -->
     <div class="boot-overlay" id="bootOverlay">
         <div class="boot-text">🚀 INITIALIZING SYSTEM<span class="boot-dots"></span></div>
         <div class="boot-progress">
@@ -558,10 +534,10 @@ async def index():
         <div class="boot-text" style="font-size: 0.8rem; margin-top: 10px; color: #64748b;">Loading Vehicle Intelligence...</div>
     </div>
 
-    <!-- ===== SPRINKLE CONTAINER ===== -->
+    <!-- SPRINKLE CONTAINER -->
     <div class="sprinkle-container" id="sprinkleContainer"></div>
 
-    <!-- ===== AUDIO ===== -->
+    <!-- AUDIO -->
     <audio id="clickSound" preload="auto">
         <source src="data:audio/wav;base64,UklGRlYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
         </source>
@@ -571,7 +547,7 @@ async def index():
         </source>
     </audio>
     <audio id="successSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRsYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
+        <source src="data:audio/wav;base64,UklGRsYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
         </source>
     </audio>
     <audio id="bootSound" preload="auto">
@@ -599,11 +575,13 @@ async def index():
             <div class="divider-cyber w-full max-w-md mx-auto mt-4"></div>
         </header>
 
+        <!-- DISCLAIMER -->
         <div class="disclaimer-box mb-6">
             <div class="title">⚠️ Disclaimer</div>
             <div class="text">This tool is only for educational purposes.<br>Made by: <strong class="text-blue-400">Samarth</strong></div>
         </div>
 
+        <!-- MAIN PANEL -->
         <div class="glass-premium rounded-2xl p-6 lg:p-8" id="mainPanel">
             
             <div class="flex items-center gap-3 mb-6">
@@ -719,11 +697,14 @@ async def index():
             </div>
         </div>
 
+        <!-- FOOTER - Visible Owner Name -->
         <footer class="mt-8 pt-4 border-t border-white/5 text-center">
             <p class="text-[10px] text-gray-600 font-['Orbitron'] tracking-[0.1em]">
                 ⚡ SAMARTH HACKER • VEHICLE INTELLIGENCE SYSTEM v2.0 PRO
             </p>
-            <p class="text-[8px] text-gray-700 mt-1">Made with ❤️ by Samarth</p>
+            <p class="text-[10px] text-blue-400 font-['Orbitron'] tracking-[0.1em] mt-1">
+                👑 OWNER: <strong class="text-blue-400">SAMARTH</strong>
+            </p>
         </footer>
     </div>
 
@@ -734,7 +715,7 @@ async def index():
         const maxAttempts = 3;
         const correctPassword = "Avenue-1";
 
-        // ===== SOUND FUNCTIONS =====
+        // === SOUND FUNCTIONS ===
         function playSound(id) {
             try {
                 const audio = document.getElementById(id);
@@ -744,19 +725,16 @@ async def index():
                 }
             } catch(e) {}
         }
-
         function playClickSound() { playSound('clickSound'); }
         function playErrorSound() { playSound('errorSound'); }
         function playSuccessSound() { playSound('successSound'); }
         function playBootSound() { playSound('bootSound'); }
 
-        // ===== SPRINKLE EFFECT =====
+        // === SPRINKLE EFFECT ===
         function triggerSprinkles() {
             const container = document.getElementById('sprinkleContainer');
             container.innerHTML = '';
-            
             const emojis = ['🔵', '💠', '✨', '⭐', '🔹', '💎', '🌟', '⚡', '💫', '🌀'];
-            
             for (let i = 0; i < 40; i++) {
                 const sprinkle = document.createElement('div');
                 sprinkle.className = 'sprinkle';
@@ -768,13 +746,10 @@ async def index():
                 sprinkle.style.animationDelay = (Math.random() * 1.5) + 's';
                 container.appendChild(sprinkle);
             }
-            
-            setTimeout(() => {
-                container.innerHTML = '';
-            }, 5000);
+            setTimeout(() => { container.innerHTML = ''; }, 5000);
         }
 
-        // ===== FAKE BOOTING =====
+        // === FAKE BOOTING ===
         function showBooting() {
             return new Promise((resolve) => {
                 const overlay = document.getElementById('bootOverlay');
@@ -782,13 +757,10 @@ async def index():
                 void overlay.offsetWidth;
                 overlay.classList.add('active');
                 playBootSound();
-                
-                // Reset progress
                 const fill = document.querySelector('.boot-progress-fill');
                 fill.style.animation = 'none';
                 void fill.offsetWidth;
                 fill.style.animation = 'bootProgress 3s ease-in-out forwards';
-                
                 setTimeout(() => {
                     overlay.classList.remove('active');
                     resolve();
@@ -796,7 +768,7 @@ async def index():
             });
         }
 
-        // ===== VERIFY PASSWORD =====
+        // === VERIFY PASSWORD ===
         async function verifyPassword() {
             const passwordInput = document.getElementById('passwordInput');
             const password = passwordInput.value.trim();
@@ -822,30 +794,23 @@ async def index():
                     feedback.innerHTML = '<span class="text-emerald-400 text-xs">✅ Access Granted!</span>';
                     passwordInput.className = 'input-cyber success';
                     document.getElementById('passwordBtn').disabled = true;
-                    
                     messageDiv.innerHTML = '<span class="access-granted">✅ ACCESS GRANTED</span>';
                     statusDiv.classList.remove('hidden');
-                    
                     playSuccessSound();
                     triggerSprinkles();
                     await showBooting();
-                    
                     document.getElementById('passwordSection').classList.add('hidden');
                     document.getElementById('mainSystem').classList.remove('hidden');
-                    
                     addLog('🔓 ACCESS GRANTED - System unlocked', 'success');
                     attempts = 0;
                 } else {
                     attempts = data.attempts || (attempts + 1);
                     const remaining = maxAttempts - attempts;
-                    
                     feedback.innerHTML = `<span class="text-red-400 text-xs">❌ Wrong password! ${remaining} attempts remaining</span>`;
                     passwordInput.className = 'input-cyber error';
                     passwordInput.value = '';
-                    
                     messageDiv.innerHTML = `<span class="access-denied">🚫 ACCESS DENIED ${attempts}/${maxAttempts}</span>`;
                     statusDiv.classList.remove('hidden');
-                    
                     playErrorSound();
                     addLog(`🔐 ACCESS DENIED (${attempts}/${maxAttempts})`, 'error');
 
@@ -857,7 +822,6 @@ async def index():
                         feedback.innerHTML = '<span class="text-red-400 text-xs">🔒 System locked. Please restart.</span>';
                         addLog('🔒 SYSTEM LOCKED - Maximum attempts exceeded', 'locked');
                         playErrorSound();
-                        
                         document.querySelector('.badge-cyber').innerHTML = `
                             <span class="dot-cyber locked"></span>
                             <span class="text-red-500 font-['Orbitron'] booting">🔴 SYSTEM LOCKED</span>
@@ -870,7 +834,7 @@ async def index():
             }
         }
 
-        // ===== TIMESTAMP =====
+        // === TIMESTAMP ===
         function updateTimestamp() {
             const now = new Date();
             document.getElementById('timestamp').textContent = now.toLocaleTimeString('en-US', { 
@@ -883,7 +847,7 @@ async def index():
         setInterval(updateTimestamp, 1000);
         updateTimestamp();
 
-        // ===== LOGS =====
+        // === LOGS ===
         function addLog(message, type = 'info') {
             const container = document.getElementById('logsContainer');
             if (!container) return;
@@ -891,14 +855,13 @@ async def index():
             entry.className = `log-entry ${type}`;
             entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
             container.appendChild(entry);
-            
             while (container.children.length > 20) {
                 container.removeChild(container.firstChild);
             }
             container.scrollTop = container.scrollHeight;
         }
 
-        // ===== LOOKUP VEHICLE =====
+        // === LOOKUP VEHICLE ===
         async function lookupVehicle() {
             const rc = document.getElementById('rcInput').value.trim();
             if (!rc) {
@@ -910,7 +873,6 @@ async def index():
             document.getElementById('statusText').textContent = 'SEARCHING...';
             document.getElementById('statusText').style.color = '#60a5fa';
             document.getElementById('statusDot').className = 'dot-cyber active';
-            
             playClickSound();
             addLog(`🔍 Searching for RC: ${rc}`, 'info');
 
@@ -929,7 +891,6 @@ async def index():
                     addLog(`✅ Vehicle found for RC: ${rc}`, 'success');
                     playSuccessSound();
                     triggerSprinkles();
-                    
                     document.getElementById('statusText').textContent = 'SUCCESS';
                     document.getElementById('statusText').style.color = '#22c55e';
                     document.getElementById('statusDot').className = 'dot-cyber active';
@@ -950,10 +911,9 @@ async def index():
             }
         }
 
-        // ===== DISPLAY RESULTS =====
+        // === DISPLAY RESULTS ===
         function displayResults(rc, data, cached, responseTime) {
             document.getElementById('resultsSection').classList.remove('hidden');
-            
             document.getElementById('apiStatusText').textContent = 'OK';
             document.getElementById('apiStatusText').style.color = '#22c55e';
             document.getElementById('cacheStatus').textContent = cached ? 'YES' : 'NO';
@@ -961,15 +921,12 @@ async def index():
 
             const tbody = document.getElementById('resultsBody');
             tbody.innerHTML = '';
-
             const excludeFields = ['_api_time', 'cached', 'timestamp'];
-            
             let hasData = false;
             for (const [key, value] of Object.entries(data)) {
                 if (excludeFields.includes(key)) continue;
                 if (key.startsWith('_')) continue;
                 if (value === null || value === undefined || value === '') continue;
-                
                 hasData = true;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -978,13 +935,12 @@ async def index():
                 `;
                 tbody.appendChild(tr);
             }
-
             if (!hasData) {
                 tbody.innerHTML = `<tr><td colspan="2" class="text-center text-gray-500 py-8">No vehicle data found</td></tr>`;
             }
         }
 
-        // ===== CLEAR RESULTS =====
+        // === CLEAR RESULTS ===
         function clearResults() {
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('rcInput').value = '';
@@ -994,30 +950,26 @@ async def index():
             document.getElementById('statusDot').style.background = '';
             currentData = null;
             currentRc = null;
-            
             document.getElementById('logsContainer').innerHTML = `
                 <div class="log-entry info">🟢 System initialized</div>
                 <div class="log-entry info">⏳ Waiting for RC input...</div>
             `;
-            
             addLog('🧹 Results cleared', 'info');
             playClickSound();
         }
 
-        // ===== EXPORT RESULT =====
+        // === EXPORT RESULT ===
         function exportResult() {
             if (!currentData) {
                 alert('No data to export. Please lookup a vehicle first.');
                 playErrorSound();
                 return;
             }
-            
             const data = {
                 rc: currentRc,
                 timestamp: new Date().toISOString(),
                 data: currentData
             };
-            
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1025,19 +977,17 @@ async def index():
             a.download = `vehicle_${currentRc}_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            
             addLog(`📥 Exported data for ${currentRc}`, 'success');
             playSuccessSound();
         }
 
-        // ===== COPY RESULT =====
+        // === COPY RESULT ===
         function copyResult() {
             if (!currentData) {
                 alert('No data to copy. Please lookup a vehicle first.');
                 playErrorSound();
                 return;
             }
-            
             const text = JSON.stringify(currentData, null, 2);
             navigator.clipboard.writeText(text).then(() => {
                 addLog(`📋 Copied data for ${currentRc} to clipboard`, 'success');
@@ -1052,24 +1002,20 @@ async def index():
             });
         }
 
-        // ===== INIT =====
+        // === INIT ===
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('passwordInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     verifyPassword();
                 }
             });
-            
             document.getElementById('rcInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     lookupVehicle();
                 }
             });
-            
             addLog('🟢 Vehicle Lookup System ready', 'info');
             addLog('🔐 Enter password to unlock', 'info');
-            
-            // Show booting on load
             setTimeout(() => {
                 showBooting();
             }, 500);

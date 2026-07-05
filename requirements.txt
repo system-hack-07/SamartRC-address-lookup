@@ -1,4 +1,4 @@
-Flask==2.3.2
+fastapi==0.104.1
+uvicorn==0.24.0
 requests==2.31.0
-python-dotenv==1.0.0
-# Add other dependencies your project needs below
+python-multipart==0.0.6

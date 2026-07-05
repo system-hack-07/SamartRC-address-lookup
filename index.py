@@ -1,9 +1,5 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-import asyncio
-import aiohttp
-import threading
 import json
 import os
 import hashlib
@@ -27,32 +23,57 @@ VERSION = "2.0 PRO"
 CORRECT_PASSWORD = "Avenue-1"
 MAX_ATTEMPTS = 3
 
+# === SESSION STORAGE (In-memory for serverless) ===
+# Note: This resets on each serverless function invocation
+# For production, use a database like Vercel KV or Supabase
+session_data = {
+    "attempts": 0,
+    "locked": False,
+    "authenticated": False
+}
+
 # === CACHE SYSTEM ===
 def cache_path(rc):
-    os.makedirs("cache", exist_ok=True)
-    return f"cache/{hashlib.md5(rc.encode()).hexdigest()}.json"
+    # Use /tmp for Vercel serverless (writable)
+    cache_dir = "/tmp/cache"
+    os.makedirs(cache_dir, exist_ok=True)
+    return f"{cache_dir}/{hashlib.md5(rc.encode()).hexdigest()}.json"
 
 def save_cache(rc, data):
-    with open(cache_path(rc), "w") as f:
-        json.dump(data, f, indent=4)
+    try:
+        with open(cache_path(rc), "w") as f:
+            json.dump(data, f, indent=4)
+    except:
+        pass  # Silent fail for serverless
 
 def load_cache(rc):
-    path = cache_path(rc)
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            return json.load(f)
+    try:
+        path = cache_path(rc)
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                return json.load(f)
+    except:
+        pass
     return None
 
 # === LOGGING ===
 def log_query(rc, status):
-    os.makedirs("logs", exist_ok=True)
-    with open("logs/vehicle_lookup.log", "a") as f:
-        f.write(f"[{datetime.now()}] RC: {rc} - Status: {status}\n")
+    try:
+        log_dir = "/tmp/logs"
+        os.makedirs(log_dir, exist_ok=True)
+        with open(f"{log_dir}/vehicle_lookup.log", "a") as f:
+            f.write(f"[{datetime.now()}] RC: {rc} - Status: {status}\n")
+    except:
+        pass
 
 def log_attempt(ip, attempts):
-    os.makedirs("logs", exist_ok=True)
-    with open("logs/access_attempts.log", "a") as f:
-        f.write(f"[{datetime.now()}] IP: {ip} - Attempts: {attempts}\n")
+    try:
+        log_dir = "/tmp/logs"
+        os.makedirs(log_dir, exist_ok=True)
+        with open(f"{log_dir}/access_attempts.log", "a") as f:
+            f.write(f"[{datetime.now()}] IP: {ip} - Attempts: {attempts}\n")
+    except:
+        pass
 
 def fetch_vehicle_data(rc):
     cached = load_cache(rc)
@@ -82,13 +103,6 @@ def fetch_vehicle_data(rc):
     save_cache(rc, data)
     return data, False
 
-# === SESSION STORAGE ===
-session_data = {
-    "attempts": 0,
-    "locked": False,
-    "authenticated": False
-}
-
 @app.get("/", response_class=HTMLResponse)
 async def index():
     html = """
@@ -109,8 +123,6 @@ async def index():
             color: #e2e8f0;
             overflow-x: hidden;
         }
-        
-        /* ===== BACKGROUND ===== */
         .cyber-bg {
             position: fixed;
             top: 0;
@@ -139,8 +151,6 @@ async def index():
             0% { transform: translate(0, 0); }
             100% { transform: translate(40px, 40px); }
         }
-        
-        /* ===== GLASS CARDS ===== */
         .glass-premium {
             background: rgba(10, 10, 15, 0.8);
             backdrop-filter: blur(20px);
@@ -152,8 +162,6 @@ async def index():
         .glass-premium:hover {
             border-color: rgba(0, 255, 0, 0.15);
         }
-        
-        /* ===== DISCLAIMER ===== */
         .disclaimer-box {
             background: rgba(255, 0, 0, 0.05);
             border: 1px solid rgba(255, 0, 0, 0.15);
@@ -173,8 +181,6 @@ async def index():
             font-size: 0.75rem;
             margin-top: 4px;
         }
-        
-        /* ===== INPUT ===== */
         .input-cyber {
             background: rgba(0, 0, 0, 0.6);
             border: 1.5px solid rgba(0, 255, 0, 0.1);
@@ -205,8 +211,6 @@ async def index():
             border-color: #22c55e;
             box-shadow: 0 0 30px rgba(34, 197, 94, 0.15);
         }
-        
-        /* ===== BUTTONS ===== */
         .btn-cyber {
             background: linear-gradient(135deg, #00aa00, #00ff00);
             border: none;
@@ -234,7 +238,6 @@ async def index():
             cursor: not-allowed;
             transform: none;
         }
-        
         .btn-danger {
             background: linear-gradient(135deg, #cc0000, #ff0000);
             box-shadow: 0 4px 30px rgba(255, 0, 0, 0.2);
@@ -243,7 +246,6 @@ async def index():
         .btn-danger:hover {
             box-shadow: 0 8px 50px rgba(255, 0, 0, 0.4);
         }
-        
         .btn-purple {
             background: linear-gradient(135deg, #7c3aed, #8b5cf6);
             box-shadow: 0 4px 30px rgba(124, 58, 237, 0.2);
@@ -252,8 +254,6 @@ async def index():
         .btn-purple:hover {
             box-shadow: 0 8px 50px rgba(124, 58, 237, 0.4);
         }
-        
-        /* ===== STATUS BADGE ===== */
         .badge-cyber {
             display: inline-flex;
             align-items: center;
@@ -294,8 +294,6 @@ async def index():
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.7); }
         }
-        
-        /* ===== ACCESS DENIED ANIMATION ===== */
         .access-denied {
             color: #ef4444;
             font-family: 'Orbitron', monospace;
@@ -308,7 +306,6 @@ async def index():
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(0.98); }
         }
-        
         .access-granted {
             color: #22c55e;
             font-family: 'Orbitron', monospace;
@@ -321,7 +318,6 @@ async def index():
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.7; transform: scale(1.02); }
         }
-        
         .access-locked {
             color: #dc2626;
             font-family: 'Orbitron', monospace;
@@ -334,8 +330,6 @@ async def index():
             0%, 100% { opacity: 1; transform: scale(1) rotate(-2deg); }
             50% { opacity: 0.6; transform: scale(1.05) rotate(2deg); }
         }
-        
-        /* ===== RESULTS TABLE ===== */
         .result-table {
             width: 100%;
             border-collapse: collapse;
@@ -363,8 +357,6 @@ async def index():
             font-weight: 400;
             word-break: break-word;
         }
-        
-        /* ===== LOGS ===== */
         .logs-premium {
             scrollbar-width: thin;
             scrollbar-color: rgba(0, 255, 0, 0.1) transparent;
@@ -395,23 +387,10 @@ async def index():
         .log-entry.info { color: #60a5fa; }
         .log-entry.warning { color: #fbbf24; }
         .log-entry.locked { color: #dc2626; font-weight: 700; }
-        
-        /* ===== DIVIDER ===== */
         .divider-cyber {
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.15), transparent);
         }
-        
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .input-cyber { font-size: 0.95rem; padding: 0.8rem 1rem; }
-            .result-table td { padding: 6px 8px; font-size: 0.75rem; }
-            .result-table .field { font-size: 0.6rem; }
-            .access-denied, .access-granted { font-size: 1rem; }
-            .access-locked { font-size: 1.2rem; }
-        }
-        
-        /* ===== BOOTING ANIMATION ===== */
         .booting {
             color: #60a5fa;
             font-family: 'Orbitron', monospace;
@@ -423,6 +402,13 @@ async def index():
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
+        @media (max-width: 768px) {
+            .input-cyber { font-size: 0.95rem; padding: 0.8rem 1rem; }
+            .result-table td { padding: 6px 8px; font-size: 0.75rem; }
+            .result-table .field { font-size: 0.6rem; }
+            .access-denied, .access-granted { font-size: 1rem; }
+            .access-locked { font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
@@ -433,7 +419,6 @@ async def index():
 
     <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         
-        <!-- ===== HEADER ===== -->
         <header class="text-center mb-8">
             <div class="inline-block px-6 py-2 rounded-full border border-green-500/20 bg-black/30 mb-4">
                 <span class="text-[10px] text-green-500 font-['Orbitron'] tracking-[0.15em]">🔐 SECURE • VEHICLE ACCESS</span>
@@ -448,16 +433,13 @@ async def index():
             <div class="divider-cyber w-full max-w-md mx-auto mt-4"></div>
         </header>
 
-        <!-- ===== DISCLAIMER ===== -->
         <div class="disclaimer-box mb-6">
             <div class="title">⚠️ Disclaimer</div>
             <div class="text">This tool is only for educational purposes.<br>Made by: <strong class="text-green-400">Samarth</strong></div>
         </div>
 
-        <!-- ===== MAIN CARD ===== -->
         <div class="glass-premium rounded-2xl p-6 lg:p-8">
             
-            <!-- Vehicle Intelligence -->
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-2xl">🚗</span>
                 <div>
@@ -485,16 +467,14 @@ async def index():
                 </button>
             </div>
 
-            <!-- Access Status -->
             <div id="accessStatus" class="mt-4 p-3 bg-black/30 rounded-xl border border-white/5 text-center hidden">
                 <div id="accessMessage" class="text-sm font-['Orbitron']"></div>
             </div>
 
-            <!-- Main System (Hidden until authenticated) -->
+            <!-- Main System -->
             <div id="mainSystem" class="hidden mt-6">
                 <div class="divider-cyber w-full mb-4"></div>
 
-                <!-- Status Badge -->
                 <div class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/5 mb-4">
                     <div class="badge-cyber">
                         <span class="dot-cyber idle" id="statusDot"></span>
@@ -503,7 +483,6 @@ async def index():
                     <div class="text-[10px] text-gray-500 font-['Orbitron']" id="timestamp"></div>
                 </div>
 
-                <!-- Vehicle RC Lookup -->
                 <div class="space-y-4">
                     <div>
                         <label class="text-xs text-gray-500 font-['Orbitron'] tracking-[0.1em] block mb-2">VEHICLE RC LOOKUP</label>
@@ -525,17 +504,14 @@ async def index():
                     </div>
                 </div>
 
-                <!-- ===== RESULTS SECTION ===== -->
                 <div id="resultsSection" class="mt-6 hidden">
                     <div class="divider-cyber w-full mb-4"></div>
                     
-                    <!-- Tool Info -->
                     <div class="text-center mb-4">
                         <span class="text-xs text-green-400 font-['Orbitron'] tracking-[0.1em]">⚡ VEHICLE LOOKUP SYSTEM</span>
                         <div class="text-[10px] text-gray-500 mt-1">[ SAMARTH HACKER ]</div>
                     </div>
 
-                    <!-- API Status -->
                     <div id="apiStatus" class="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/5 mb-4">
                         <div>
                             <span class="text-xs text-green-400 font-['Orbitron']">API: <span id="apiStatusText">OK</span></span>
@@ -546,7 +522,6 @@ async def index():
                         </div>
                     </div>
 
-                    <!-- Results Table -->
                     <div id="resultsTable" class="bg-black/30 rounded-xl border border-white/5 overflow-hidden">
                         <table class="result-table">
                             <tbody id="resultsBody">
@@ -555,7 +530,6 @@ async def index():
                         </table>
                     </div>
 
-                    <!-- Export & Copy -->
                     <div class="grid grid-cols-2 gap-3 mt-4">
                         <button onclick="exportResult()" id="exportBtn" class="btn-cyber text-xs py-2.5 btn-purple">
                             📥 EXPORT JSON
@@ -565,7 +539,6 @@ async def index():
                         </button>
                     </div>
 
-                    <!-- Logs -->
                     <div class="mt-4">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-[10px] text-gray-500 font-['Orbitron'] tracking-[0.1em]">📜 ACTIVITY LOG</span>
@@ -580,7 +553,6 @@ async def index():
             </div>
         </div>
 
-        <!-- ===== FOOTER ===== -->
         <footer class="mt-8 pt-4 border-t border-white/5 text-center">
             <p class="text-[10px] text-gray-600 font-['Orbitron'] tracking-[0.1em]">
                 ⚡ SAMARTH HACKER • VEHICLE INTELLIGENCE SYSTEM v2.0 PRO
@@ -596,7 +568,6 @@ async def index():
         const maxAttempts = 3;
         const correctPassword = "Avenue-1";
 
-        // ===== PASSWORD VERIFICATION =====
         async function verifyPassword() {
             const passwordInput = document.getElementById('passwordInput');
             const password = passwordInput.value.trim();
@@ -618,7 +589,6 @@ async def index():
                 const data = await response.json();
 
                 if (data.status === 'success') {
-                    // Password correct - Access Granted
                     feedback.innerHTML = '<span class="text-emerald-400 text-xs">✅ Access Granted!</span>';
                     passwordInput.className = 'input-cyber success';
                     document.getElementById('passwordBtn').disabled = true;
@@ -626,16 +596,12 @@ async def index():
                     messageDiv.innerHTML = '<span class="access-granted">✅ ACCESS GRANTED</span>';
                     statusDiv.classList.remove('hidden');
                     
-                    // Show main system
                     document.getElementById('passwordSection').classList.add('hidden');
                     document.getElementById('mainSystem').classList.remove('hidden');
                     
                     addLog('🔓 ACCESS GRANTED - System unlocked', 'success');
-                    
-                    // Reset attempts
                     attempts = 0;
                 } else {
-                    // Password incorrect
                     attempts = data.attempts || (attempts + 1);
                     const remaining = maxAttempts - attempts;
                     
@@ -649,7 +615,6 @@ async def index():
                     addLog(`🔐 ACCESS DENIED (${attempts}/${maxAttempts})`, 'error');
 
                     if (attempts >= maxAttempts) {
-                        // Locked out
                         messageDiv.innerHTML = '<span class="access-locked">🔒 SYSTEM LOCKED</span>';
                         document.getElementById('passwordBtn').disabled = true;
                         passwordInput.disabled = true;
@@ -657,7 +622,6 @@ async def index():
                         feedback.innerHTML = '<span class="text-red-400 text-xs">🔒 System locked. Please restart.</span>';
                         addLog('🔒 SYSTEM LOCKED - Maximum attempts exceeded', 'locked');
                         
-                        // Show booting message
                         document.querySelector('.badge-cyber').innerHTML = `
                             <span class="dot-cyber locked"></span>
                             <span class="text-red-500 font-['Orbitron'] booting">🔴 SYSTEM LOCKED</span>
@@ -669,7 +633,6 @@ async def index():
             }
         }
 
-        // ===== TIMESTAMP =====
         function updateTimestamp() {
             const now = new Date();
             document.getElementById('timestamp').textContent = now.toLocaleTimeString('en-US', { 
@@ -682,7 +645,6 @@ async def index():
         setInterval(updateTimestamp, 1000);
         updateTimestamp();
 
-        // ===== LOGS =====
         function addLog(message, type = 'info') {
             const container = document.getElementById('logsContainer');
             if (!container) return;
@@ -697,7 +659,6 @@ async def index():
             container.scrollTop = container.scrollHeight;
         }
 
-        // ===== LOOKUP VEHICLE =====
         async function lookupVehicle() {
             const rc = document.getElementById('rcInput').value.trim();
             if (!rc) {
@@ -743,7 +704,6 @@ async def index():
             }
         }
 
-        // ===== DISPLAY RESULTS =====
         function displayResults(rc, data, cached, responseTime) {
             document.getElementById('resultsSection').classList.remove('hidden');
             
@@ -777,7 +737,6 @@ async def index():
             }
         }
 
-        // ===== CLEAR RESULTS =====
         function clearResults() {
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('rcInput').value = '';
@@ -796,7 +755,6 @@ async def index():
             addLog('🧹 Results cleared', 'info');
         }
 
-        // ===== EXPORT RESULT =====
         function exportResult() {
             if (!currentData) {
                 alert('No data to export. Please lookup a vehicle first.');
@@ -820,7 +778,6 @@ async def index():
             addLog(`📥 Exported data for ${currentRc}`, 'success');
         }
 
-        // ===== COPY RESULT =====
         function copyResult() {
             if (!currentData) {
                 alert('No data to copy. Please lookup a vehicle first.');
@@ -839,16 +796,13 @@ async def index():
             });
         }
 
-        // ===== INIT =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Password input enter key
             document.getElementById('passwordInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     verifyPassword();
                 }
             });
             
-            // RC input enter key
             document.getElementById('rcInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     lookupVehicle();
@@ -870,7 +824,6 @@ async def verify_password(request: Request):
         body = await request.json()
         password = body.get('password', '')
         
-        # Get client IP for logging
         client_ip = request.client.host if request.client else "unknown"
         
         if session_data["locked"]:
@@ -924,7 +877,6 @@ async def lookup_vehicle(request: Request):
         if not rc:
             return {"status": "error", "message": "RC number is required"}
         
-        # Check cache
         cached_data = load_cache(rc)
         if cached_data:
             return {
@@ -934,7 +886,6 @@ async def lookup_vehicle(request: Request):
                 "response_time": 0
             }
         
-        # Fetch from API
         params = {"rc": rc}
         url = f"{API_BASE}?{urlencode(params)}"
         
@@ -961,7 +912,6 @@ async def lookup_vehicle(request: Request):
         except:
             return {"status": "error", "message": "Invalid JSON response from API"}
         
-        # Save cache
         save_cache(rc, data)
         log_query(rc, "SUCCESS")
         

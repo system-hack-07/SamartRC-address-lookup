@@ -129,8 +129,9 @@ async def index():
             z-index: 0;
             background: #0a0a0f;
             background-image: 
-                radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 50%, rgba(99, 102, 241, 0.03) 0%, transparent 60%);
+                radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
         }
         .cyber-grid {
             position: absolute;
@@ -148,18 +149,132 @@ async def index():
             0% { transform: translate(0, 0); }
             100% { transform: translate(40px, 40px); }
         }
+        
+        /* ===== GLOWING BLUE BORDER ===== */
         .glass-premium {
             background: rgba(10, 10, 15, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 2px solid rgba(59, 130, 246, 0.3);
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.05);
+            box-shadow: 
+                0 20px 40px -12px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(59, 130, 246, 0.05),
+                inset 0 0 30px rgba(59, 130, 246, 0.02);
             transition: all 0.3s ease;
+            animation: glowPulse 3s ease-in-out infinite;
         }
         .glass-premium:hover {
-            border-color: rgba(59, 130, 246, 0.6);
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 50px rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.7);
+            box-shadow: 
+                0 20px 40px -12px rgba(0, 0, 0, 0.8),
+                0 0 60px rgba(59, 130, 246, 0.15),
+                0 0 100px rgba(59, 130, 246, 0.08),
+                inset 0 0 50px rgba(59, 130, 246, 0.05);
         }
+        @keyframes glowPulse {
+            0%, 100% { 
+                border-color: rgba(59, 130, 246, 0.3);
+                box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.05);
+            }
+            50% { 
+                border-color: rgba(59, 130, 246, 0.6);
+                box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 60px rgba(59, 130, 246, 0.1), 0 0 100px rgba(59, 130, 246, 0.05);
+            }
+        }
+        
+        /* ===== SPRINKLES ===== */
+        .sprinkle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            overflow: hidden;
+        }
+        .sprinkle {
+            position: absolute;
+            animation: sprinkleFall linear forwards;
+            pointer-events: none;
+            font-size: 1.5rem;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+        }
+        @keyframes sprinkleFall {
+            0% { transform: translateY(-10px) rotate(0deg) scale(0.3); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg) scale(1.5); opacity: 0; }
+        }
+        
+        /* ===== FAKE BOOTING OVERLAY ===== */
+        .boot-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            background: #0a0a0f;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .boot-overlay.active {
+            display: flex;
+            animation: bootFade 4s ease-out forwards;
+        }
+        @keyframes bootFade {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .boot-text {
+            font-family: 'Orbitron', monospace;
+            color: #60a5fa;
+            font-size: 1.2rem;
+            letter-spacing: 0.15em;
+            animation: bootPulse 0.5s ease-in-out infinite;
+        }
+        @keyframes bootPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .boot-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .boot-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6);
+            border-radius: 10px;
+            animation: bootProgress 3s ease-in-out forwards;
+            width: 0%;
+        }
+        @keyframes bootProgress {
+            0% { width: 0%; }
+            20% { width: 15%; }
+            40% { width: 35%; }
+            60% { width: 55%; }
+            80% { width: 80%; }
+            100% { width: 100%; }
+        }
+        .boot-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        @keyframes dots {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+            100% { content: ''; }
+        }
+        
+        /* ===== DISCLAIMER ===== */
         .disclaimer-box {
             background: rgba(255, 0, 0, 0.05);
             border: 1px solid rgba(255, 0, 0, 0.15);
@@ -179,6 +294,8 @@ async def index():
             font-size: 0.75rem;
             margin-top: 4px;
         }
+        
+        /* ===== INPUT ===== */
         .input-cyber {
             background: rgba(0, 0, 0, 0.6);
             border: 1.5px solid rgba(59, 130, 246, 0.2);
@@ -193,7 +310,7 @@ async def index():
         }
         .input-cyber:focus {
             border-color: #3b82f6;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.15), inset 0 0 30px rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2), inset 0 0 30px rgba(59, 130, 246, 0.05);
             outline: none;
         }
         .input-cyber::placeholder {
@@ -209,6 +326,8 @@ async def index():
             border-color: #22c55e;
             box-shadow: 0 0 30px rgba(34, 197, 94, 0.15);
         }
+        
+        /* ===== BUTTONS ===== */
         .btn-cyber {
             background: linear-gradient(135deg, #1e40af, #3b82f6);
             border: none;
@@ -219,14 +338,30 @@ async def index():
             font-family: 'Orbitron', monospace;
             font-size: 0.95rem;
             letter-spacing: 0.05em;
-            box-shadow: 0 4px 30px rgba(59, 130, 246, 0.25);
+            box-shadow: 0 4px 30px rgba(59, 130, 246, 0.3);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-cyber::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            transform: scale(0);
+            transition: transform 0.6s;
+        }
+        .btn-cyber:hover::after {
+            transform: scale(1);
         }
         .btn-cyber:hover {
             transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 8px 50px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 8px 50px rgba(59, 130, 246, 0.5);
         }
         .btn-cyber:active {
             transform: scale(0.98);
@@ -252,6 +387,8 @@ async def index():
         .btn-purple:hover {
             box-shadow: 0 8px 50px rgba(124, 58, 237, 0.4);
         }
+        
+        /* ===== BADGE ===== */
         .badge-cyber {
             display: inline-flex;
             align-items: center;
@@ -292,6 +429,8 @@ async def index():
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.7); }
         }
+        
+        /* ===== ACCESS STATUS ===== */
         .access-denied {
             color: #ef4444;
             font-family: 'Orbitron', monospace;
@@ -328,6 +467,8 @@ async def index():
             0%, 100% { opacity: 1; transform: scale(1) rotate(-2deg); }
             50% { opacity: 0.6; transform: scale(1.05) rotate(2deg); }
         }
+        
+        /* ===== RESULTS ===== */
         .result-table {
             width: 100%;
             border-collapse: collapse;
@@ -355,6 +496,8 @@ async def index():
             font-weight: 400;
             word-break: break-word;
         }
+        
+        /* ===== LOGS ===== */
         .logs-premium {
             scrollbar-width: thin;
             scrollbar-color: rgba(59, 130, 246, 0.1) transparent;
@@ -385,31 +528,56 @@ async def index():
         .log-entry.info { color: #60a5fa; }
         .log-entry.warning { color: #fbbf24; }
         .log-entry.locked { color: #dc2626; font-weight: 700; }
+        
+        /* ===== DIVIDER ===== */
         .divider-cyber {
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15), transparent);
         }
-        .booting {
-            color: #60a5fa;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            font-size: 0.8rem;
-            animation: bootPulse 0.5s ease-in-out infinite;
-        }
-        @keyframes bootPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
+        
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .input-cyber { font-size: 0.95rem; padding: 0.8rem 1rem; }
             .result-table td { padding: 6px 8px; font-size: 0.75rem; }
             .result-table .field { font-size: 0.6rem; }
             .access-denied, .access-granted { font-size: 1rem; }
             .access-locked { font-size: 1.2rem; }
+            .boot-text { font-size: 0.9rem; }
+            .boot-progress { width: 200px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- ===== FAKE BOOTING OVERLAY ===== -->
+    <div class="boot-overlay" id="bootOverlay">
+        <div class="boot-text">🚀 INITIALIZING SYSTEM<span class="boot-dots"></span></div>
+        <div class="boot-progress">
+            <div class="boot-progress-fill"></div>
+        </div>
+        <div class="boot-text" style="font-size: 0.8rem; margin-top: 10px; color: #64748b;">Loading Vehicle Intelligence...</div>
+    </div>
+
+    <!-- ===== SPRINKLE CONTAINER ===== -->
+    <div class="sprinkle-container" id="sprinkleContainer"></div>
+
+    <!-- ===== AUDIO ===== -->
+    <audio id="clickSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRlYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
+        </source>
+    </audio>
+    <audio id="errorSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
+        </source>
+    </audio>
+    <audio id="successSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRsYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
+        </source>
+    </audio>
+    <audio id="bootSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRlYDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQYDAACBhYqFh4qAgICAf4mMjo6LgH6Af3t/gHp3doR/gXx2e3Z1c2dxc3NwZWNfXmNcU1hVU1dWU1BQUU1MSkVGRkpHSEZGQ0dDQkI+OjUyMy4rKScnJiMiHRsWGRIPDAkGBwMCAQABAgIDAwMCAgEBAQEBAQEBAgIDAgIDAgIDAwMDAwMEBAQEBQUFBQUGBgYGBwcHCAgJCQkJCwsLCwsLCwwMDA0NDQ4ODg8PDw8PDw8PDw8PDw8PDw8QDw8PDw4ODg0NDQwMDAwLCwsKCgoICQgHBwYGBgUEBAMDAwICAQEBAQEBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDxAPEA8PDw8PDw8PDw8OEA8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoKCQkJCQgHBwYGBgUFBAMDAwMCAgIBAQEBAQECAgIDAwMDAwQEBAUFBQYGBwcHCAgICQkJCgoLCwwMDA0ODQ4PDw8PDw8QDw8PDw8PDw8PDw4ODg4ODQ0NDQwMDAwLCwsLCgoJCQkICAcHBwYGBQUEBAMDAwMCAgEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBwcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PEA8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAQEBAQECAgIDAwMDAwQEBAUFBQUGBgcHCAgICQkJCgoLCwsLDAwMDQ0NDg4ODw8PDw8PDw8PDw4ODg4ODQ0NDQ0MDAwLCwsLCgoKCQkJCQgHBwcGBgUFBQQEAwMDAwICAQEBAA==">
+        </source>
+    </audio>
 
     <div class="cyber-bg">
         <div class="cyber-grid"></div>
@@ -436,7 +604,7 @@ async def index():
             <div class="text">This tool is only for educational purposes.<br>Made by: <strong class="text-blue-400">Samarth</strong></div>
         </div>
 
-        <div class="glass-premium rounded-2xl p-6 lg:p-8">
+        <div class="glass-premium rounded-2xl p-6 lg:p-8" id="mainPanel">
             
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-2xl">🚗</span>
@@ -566,6 +734,69 @@ async def index():
         const maxAttempts = 3;
         const correctPassword = "Avenue-1";
 
+        // ===== SOUND FUNCTIONS =====
+        function playSound(id) {
+            try {
+                const audio = document.getElementById(id);
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play().catch(() => {});
+                }
+            } catch(e) {}
+        }
+
+        function playClickSound() { playSound('clickSound'); }
+        function playErrorSound() { playSound('errorSound'); }
+        function playSuccessSound() { playSound('successSound'); }
+        function playBootSound() { playSound('bootSound'); }
+
+        // ===== SPRINKLE EFFECT =====
+        function triggerSprinkles() {
+            const container = document.getElementById('sprinkleContainer');
+            container.innerHTML = '';
+            
+            const emojis = ['🔵', '💠', '✨', '⭐', '🔹', '💎', '🌟', '⚡', '💫', '🌀'];
+            
+            for (let i = 0; i < 40; i++) {
+                const sprinkle = document.createElement('div');
+                sprinkle.className = 'sprinkle';
+                sprinkle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                sprinkle.style.left = Math.random() * 100 + '%';
+                sprinkle.style.top = '-10px';
+                sprinkle.style.fontSize = (0.8 + Math.random() * 1.8) + 'rem';
+                sprinkle.style.animationDuration = (2 + Math.random() * 3) + 's';
+                sprinkle.style.animationDelay = (Math.random() * 1.5) + 's';
+                container.appendChild(sprinkle);
+            }
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // ===== FAKE BOOTING =====
+        function showBooting() {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('bootOverlay');
+                overlay.classList.remove('active');
+                void overlay.offsetWidth;
+                overlay.classList.add('active');
+                playBootSound();
+                
+                // Reset progress
+                const fill = document.querySelector('.boot-progress-fill');
+                fill.style.animation = 'none';
+                void fill.offsetWidth;
+                fill.style.animation = 'bootProgress 3s ease-in-out forwards';
+                
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    resolve();
+                }, 4000);
+            });
+        }
+
+        // ===== VERIFY PASSWORD =====
         async function verifyPassword() {
             const passwordInput = document.getElementById('passwordInput');
             const password = passwordInput.value.trim();
@@ -575,6 +806,7 @@ async def index():
 
             if (!password) {
                 feedback.innerHTML = '<span class="text-red-400 text-xs">⚠️ Please enter the password</span>';
+                playErrorSound();
                 return;
             }
 
@@ -594,6 +826,10 @@ async def index():
                     messageDiv.innerHTML = '<span class="access-granted">✅ ACCESS GRANTED</span>';
                     statusDiv.classList.remove('hidden');
                     
+                    playSuccessSound();
+                    triggerSprinkles();
+                    await showBooting();
+                    
                     document.getElementById('passwordSection').classList.add('hidden');
                     document.getElementById('mainSystem').classList.remove('hidden');
                     
@@ -610,6 +846,7 @@ async def index():
                     messageDiv.innerHTML = `<span class="access-denied">🚫 ACCESS DENIED ${attempts}/${maxAttempts}</span>`;
                     statusDiv.classList.remove('hidden');
                     
+                    playErrorSound();
                     addLog(`🔐 ACCESS DENIED (${attempts}/${maxAttempts})`, 'error');
 
                     if (attempts >= maxAttempts) {
@@ -619,6 +856,7 @@ async def index():
                         passwordInput.className = 'input-cyber error';
                         feedback.innerHTML = '<span class="text-red-400 text-xs">🔒 System locked. Please restart.</span>';
                         addLog('🔒 SYSTEM LOCKED - Maximum attempts exceeded', 'locked');
+                        playErrorSound();
                         
                         document.querySelector('.badge-cyber').innerHTML = `
                             <span class="dot-cyber locked"></span>
@@ -628,9 +866,11 @@ async def index():
                 }
             } catch (error) {
                 feedback.innerHTML = `<span class="text-red-400 text-xs">❌ Error: ${error.message}</span>`;
+                playErrorSound();
             }
         }
 
+        // ===== TIMESTAMP =====
         function updateTimestamp() {
             const now = new Date();
             document.getElementById('timestamp').textContent = now.toLocaleTimeString('en-US', { 
@@ -643,6 +883,7 @@ async def index():
         setInterval(updateTimestamp, 1000);
         updateTimestamp();
 
+        // ===== LOGS =====
         function addLog(message, type = 'info') {
             const container = document.getElementById('logsContainer');
             if (!container) return;
@@ -657,10 +898,12 @@ async def index():
             container.scrollTop = container.scrollHeight;
         }
 
+        // ===== LOOKUP VEHICLE =====
         async function lookupVehicle() {
             const rc = document.getElementById('rcInput').value.trim();
             if (!rc) {
                 addLog('❌ Please enter an RC number', 'error');
+                playErrorSound();
                 return;
             }
 
@@ -668,6 +911,7 @@ async def index():
             document.getElementById('statusText').style.color = '#60a5fa';
             document.getElementById('statusDot').className = 'dot-cyber active';
             
+            playClickSound();
             addLog(`🔍 Searching for RC: ${rc}`, 'info');
 
             try {
@@ -683,6 +927,8 @@ async def index():
                     currentRc = rc;
                     displayResults(rc, data.data, data.cached, data.response_time);
                     addLog(`✅ Vehicle found for RC: ${rc}`, 'success');
+                    playSuccessSound();
+                    triggerSprinkles();
                     
                     document.getElementById('statusText').textContent = 'SUCCESS';
                     document.getElementById('statusText').style.color = '#22c55e';
@@ -690,18 +936,21 @@ async def index():
                     document.getElementById('statusDot').style.background = '#22c55e';
                 } else {
                     addLog(`❌ Error: ${data.message}`, 'error');
+                    playErrorSound();
                     document.getElementById('statusText').textContent = 'ERROR';
                     document.getElementById('statusText').style.color = '#ef4444';
                     document.getElementById('statusDot').className = 'dot-cyber error';
                 }
             } catch (error) {
                 addLog(`❌ Request failed: ${error.message}`, 'error');
+                playErrorSound();
                 document.getElementById('statusText').textContent = 'ERROR';
                 document.getElementById('statusText').style.color = '#ef4444';
                 document.getElementById('statusDot').className = 'dot-cyber error';
             }
         }
 
+        // ===== DISPLAY RESULTS =====
         function displayResults(rc, data, cached, responseTime) {
             document.getElementById('resultsSection').classList.remove('hidden');
             
@@ -735,6 +984,7 @@ async def index():
             }
         }
 
+        // ===== CLEAR RESULTS =====
         function clearResults() {
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('rcInput').value = '';
@@ -751,11 +1001,14 @@ async def index():
             `;
             
             addLog('🧹 Results cleared', 'info');
+            playClickSound();
         }
 
+        // ===== EXPORT RESULT =====
         function exportResult() {
             if (!currentData) {
                 alert('No data to export. Please lookup a vehicle first.');
+                playErrorSound();
                 return;
             }
             
@@ -774,26 +1027,32 @@ async def index():
             URL.revokeObjectURL(url);
             
             addLog(`📥 Exported data for ${currentRc}`, 'success');
+            playSuccessSound();
         }
 
+        // ===== COPY RESULT =====
         function copyResult() {
             if (!currentData) {
                 alert('No data to copy. Please lookup a vehicle first.');
+                playErrorSound();
                 return;
             }
             
             const text = JSON.stringify(currentData, null, 2);
             navigator.clipboard.writeText(text).then(() => {
                 addLog(`📋 Copied data for ${currentRc} to clipboard`, 'success');
+                playSuccessSound();
                 const btn = document.getElementById('copyBtn');
                 const originalText = btn.textContent;
                 btn.textContent = '✅ COPIED!';
                 setTimeout(() => { btn.textContent = originalText; }, 2000);
             }).catch(() => {
                 addLog('❌ Failed to copy data', 'error');
+                playErrorSound();
             });
         }
 
+        // ===== INIT =====
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('passwordInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
@@ -809,6 +1068,11 @@ async def index():
             
             addLog('🟢 Vehicle Lookup System ready', 'info');
             addLog('🔐 Enter password to unlock', 'info');
+            
+            // Show booting on load
+            setTimeout(() => {
+                showBooting();
+            }, 500);
         });
     </script>
 </body>
